@@ -16,6 +16,8 @@ any host machine configuration.
   `bash scripts/container-test`.
 - Scripts must run in bash 3.2 (macOS) and Git Bash: no empty-array
   expansion under `set -u`, no GNU-only options. Shellcheck them.
+- Dashboard: `bash scripts/dashboard-check` (locked Bun dependencies,
+  TypeScript 7, real SQLite API tests and the production frontend build).
 - Nix: `nix flake check` and the VM checks in docs/vm.md.
 - Report the checks actually executed and what stayed untested.
 

@@ -23,6 +23,7 @@ decision at a time.
 Look up the rest when you need it:
 [how the agent works](docs/architecture.md),
 [how to measure a change](docs/benchmarks.md),
+[development feedback loop and dashboard](docs/feedback-loop.md),
 [VM and Nix setup](docs/vm.md),
 [what was actually tested](VERIFICATION.md).
 

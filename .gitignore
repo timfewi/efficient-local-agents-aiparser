@@ -18,6 +18,8 @@ result-*
 dist/
 *.egg-info/
 vendor/
+dashboard/node_modules/
+dashboard/dist/
 .agents/skills/
 .bob/skills/
 .tabula/

@@ -667,6 +667,38 @@ def test_development_allowance_stops_live_requests_across_runs(receipt, tmp_path
         spend.check()
 
 
+def test_optimizer_stops_http_retries_as_soon_as_cost_is_unknown(receipt, tmp_path, monkeypatch):
+    monkeypatch.setenv("HACKLAB_OPTIMIZATION_UNKNOWN_BASELINE", "0")
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(500, json={"error": "temporary"})
+
+    provider = cached(receipt, tmp_path, handler)
+    with pytest.raises(BudgetExceeded, match="^optimization_cost_unknown$"):
+        provider.complete([], {})
+    assert len(requests) == 1
+    assert receipt[0].spend()["unknown_cost_calls"] == 1
+
+
+def test_stage_receipts_follow_live_and_replayed_caller_without_leaking_context(receipt, tmp_path):
+    from hacklab.providers import provider_stage
+
+    def handler(request):
+        return httpx.Response(200, json=completion())
+
+    with provider_stage("optimizer_analyst"):
+        cached(receipt, tmp_path, handler).complete([], {})
+    with provider_stage("responder"):
+        cached(receipt, tmp_path, handler).complete([], {})
+    cached(receipt, tmp_path, handler).complete([{"role": "user", "content": "new"}], {})
+    first, second, third = receipt[0].calls(receipt[1])
+    assert first["metadata"]["stage"] == "optimizer_analyst"
+    assert second["metadata"]["stage"] == "responder" and second["metadata"]["cache_hit"]
+    assert "stage" not in third["metadata"]
+
+
 def test_make_providers_builds_cache_and_allowance_from_configuration(receipt, tmp_path):
     tracker, run_id = receipt
     config = Config.model_validate(

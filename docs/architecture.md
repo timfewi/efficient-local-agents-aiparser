@@ -23,6 +23,9 @@ Task
 | File | Owns |
 | --- | --- |
 | `agent.py` | Order of work, the loop, repair, final checks |
+| `pipeline.py` | Opt-in Analyst / Responder experiment, shared budgets and guarded handoffs |
+| `optimize.py` | Development-only configuration proposals, measurements, promotion and hold-out freeze |
+| `dashboard/` | Local Bun / React workspace over body-free receipts and bounded visual source maps |
 | `event/` | What the team writes on the day: playbooks, skills, the starter-kit adapter |
 | `playbooks.py` | Registry of code-only solvers and the workspace they work in |
 | `toolkit.py` | Tool list for the prompt, result rendering, the organizers' tools |
@@ -57,6 +60,14 @@ Cost is half the score. Best lever first:
 A skill file starts with `match: <regex>` and then holds a few lines with
 example tool calls. Code picks it from the task text, never from the evidence.
 At most two skills are added per task.
+
+The [development feedback loop](feedback-loop.md) measures one allowed setting
+change at a time and keeps a candidate only when accuracy and cost meet its
+explicit promotion rule. Its Analyst sees aggregates, not competition tasks or
+reference answers. The dashboard is read-only and cannot launch paid calls.
+`[agent] workflow = "pipeline"` separately tests batched read-only planning and
+a fresh Responder; it is not the submission default. The initial experiment lost
+accuracy despite costing less ([results](research/small-model-collaboration.md)).
 
 ## Defence layers
 

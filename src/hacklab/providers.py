@@ -11,10 +11,13 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import re
 import threading
 import time
 from collections.abc import Callable
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -27,10 +30,28 @@ from hacklab.cache import ResponseCache
 from hacklab.config import Config, DevBudget, JevConfig, Limits, ModelConfig, read_secret
 
 MAX_RESPONSE_BYTES = 1_000_000
-# Pause before the first, second, ... retry of a request that failed for a
-# reason that passes: a rate limit, a server error, a lost connection. A longer
-# Retry-After from the server wins.
+# Pause before the first, second, ... retry. A longer server Retry-After wins.
 RETRY_PAUSES = (0.5, 1.0, 2.0, 4.0)
+_REQUEST_STAGE: ContextVar[str | None] = ContextVar("hacklab_request_stage", default=None)
+
+
+@contextmanager
+def provider_stage(stage: str):
+    """Tag every attempt/replay in one role, without changing requests or cache keys.
+
+    Context-local state keeps concurrent task workers from sharing a stage.
+    Bodies still go only to the optional development cache and trace.
+    """
+    token = _REQUEST_STAGE.set(stage)
+    try:
+        yield
+    finally:
+        _REQUEST_STAGE.reset(token)
+
+
+def _stage_metadata() -> dict[str, str]:
+    stage = _REQUEST_STAGE.get()
+    return {"stage": stage} if stage is not None else {}
 
 
 class ProviderError(RuntimeError):
@@ -149,12 +170,27 @@ class DevSpend:
 
     def __init__(self, budget: DevBudget, tracker: Any):
         self.budget = budget
+        self.tracker = tracker
         spent = tracker.spend()
         self.calls: int = spent["calls"]
         self.tokens: int = spent["tokens"]
         self.usd: float = spent["usd"]
 
     def check(self) -> None:
+        # Development campaigns opt into stopping after the first request whose
+        # cost is unknown. Recheck before HTTP retries as well as new role calls.
+        unknown_baseline = os.environ.get("HACKLAB_OPTIMIZATION_UNKNOWN_BASELINE")
+        if unknown_baseline is not None:
+            if getattr(self.tracker, "receipts_complete", True) is not True:
+                raise BudgetExceeded("optimization_receipts_incomplete")
+            try:
+                allowed_unknown = int(unknown_baseline)
+            except ValueError:
+                raise BudgetExceeded("optimization_cost_guard_invalid") from None
+            if allowed_unknown < 0:
+                raise BudgetExceeded("optimization_cost_guard_invalid")
+            if self.tracker.spend()["unknown_cost_calls"] > allowed_unknown:
+                raise BudgetExceeded("optimization_cost_unknown")
         limits = (
             (self.budget.max_calls, self.calls),
             (self.budget.max_tokens, self.tokens),
@@ -396,6 +432,7 @@ class _HTTPProvider:
                     attempt=attempt + 1,
                     requested_model=self.model,
                     model_reported=model_reported,
+                    **_stage_metadata(),
                     **_usage_details(payload),
                 )
                 if self.spend is not None:
@@ -454,6 +491,7 @@ class _HTTPProvider:
             input_rate=self.input_rate,
             output_rate=self.output_rate,
             cache_hit=True,
+            **_stage_metadata(),
             **_usage_details(payload),
         )
         self.budget.check_consumed()
@@ -641,6 +679,7 @@ class FunctionModel:
             status=status,
             input_rate=self.rates[0],
             output_rate=self.rates[1],
+            **_stage_metadata(),
             **extra,
             **_usage_details(payload),
         )

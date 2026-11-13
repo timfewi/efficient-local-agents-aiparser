@@ -77,6 +77,11 @@ class Limits(StrictModel):
 
 
 class AgentConfig(StrictModel):
+    # The staged workflow batches read-only investigation, then gives a fresh
+    # responder the original task and executed results. Both use the same model
+    # and task budget; the ordinary loop remains the default.
+    workflow: Literal["loop", "pipeline"] = "loop"
+    pipeline_rounds: int = Field(default=2, ge=1, le=3)
     # Search results for the question placed in the first prompt, so that an
     # answerable task needs one generator call instead of a search turn first.
     preload_results: int = Field(default=0, ge=0, le=20)

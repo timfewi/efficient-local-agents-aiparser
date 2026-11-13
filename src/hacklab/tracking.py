@@ -42,7 +42,16 @@ _NUMBER_KEYS = {
     "reasoning_tokens",
 }
 _BOOL_KEYS = {"cache_hit", "cached", "usage_complete", "truncated", "verified", "dirty"}
-_LABEL_KEYS = {"status", "action", "tool", "error_type", "reason_code", "provider", "model"}
+_LABEL_KEYS = {
+    "status",
+    "action",
+    "tool",
+    "error_type",
+    "reason_code",
+    "provider",
+    "model",
+    "stage",
+}
 
 
 def _json(value: Any) -> str:
@@ -159,6 +168,9 @@ def _safe_config(config: dict) -> dict:
         safe[section] = output
     selections = {
         "agent": {
+            "workflow",
+            "pipeline_rounds",
+            "list_preview",
             "preload_results",
             "decimal_separator",
             "inventory",
@@ -201,6 +213,7 @@ def _safe_config(config: dict) -> dict:
         "timeout_seconds",
         "task_timeout_seconds",
         "max_context_chars",
+        "max_observation_chars",
         "max_output_tokens",
         "max_total_tokens",
         "max_cost_usd",
@@ -238,6 +251,7 @@ class Tracker:
     """
 
     def __init__(self, path: Path):
+        self.receipts_complete = True
         self.path = Path(path).expanduser().absolute()
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.path.parent.chmod(0o700)
@@ -268,18 +282,32 @@ class Tracker:
                 );
                 CREATE INDEX IF NOT EXISTS calls_run ON calls(run_id);
                 CREATE INDEX IF NOT EXISTS events_run ON events(run_id);
+                CREATE INDEX IF NOT EXISTS runs_started ON runs(started_at DESC, id DESC);
             """)
+
+    def mark_incomplete(self) -> None:
+        """Runtime-only, monotonic health; successful later writes cannot repair a gap."""
+        self.receipts_complete = False
 
     @contextmanager
     def _db(self) -> Iterator[sqlite3.Connection]:
-        db = sqlite3.connect(self.path, timeout=20)
-        db.row_factory = sqlite3.Row
+        db = None
         try:
+            db = sqlite3.connect(self.path, timeout=20)
+            db.row_factory = sqlite3.Row
             db.execute("PRAGMA foreign_keys=ON")
             with db:
                 yield db
+        except (sqlite3.Error, OSError):
+            self.mark_incomplete()
+            raise
         finally:
-            db.close()
+            if db is not None:
+                try:
+                    db.close()
+                except (sqlite3.Error, OSError):
+                    self.mark_incomplete()
+                    raise
 
     def start_run(
         self, task_id: str, config: dict, mode: str = "mock", metadata: dict | None = None
@@ -506,6 +534,10 @@ class NoReceipts:
     """
 
     path = None
+    receipts_complete = False
+
+    def mark_incomplete(self) -> None:
+        return
 
     def start_run(self, *args: Any, **kwargs: Any) -> str:
         return str(uuid.uuid4())

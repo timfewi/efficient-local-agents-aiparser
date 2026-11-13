@@ -1,0 +1,169 @@
+{
+  "scope": "Existing synthetic rehearsal requests; no task or response bodies",
+  "samples": [
+    {
+      "workflow": "baseline-dev",
+      "source": "e8d2165f134d3cb46bc93f76c3103e47e2f69cdb",
+      "models": [
+        {
+          "provider": "openai",
+          "model": "ibm-granite/granite-4.2-8b",
+          "requested_model": null,
+          "model_reported": null,
+          "input_rate": 0.06,
+          "output_rate": 0.15
+        }
+      ],
+      "stages": [
+        {
+          "stage": "ordinary_loop",
+          "attempts": 29
+        }
+      ],
+      "configurations": [
+        {
+          "model": {
+            "provider": "openai",
+            "configured_model": "ibm-granite/granite-4.2-8b",
+            "temperature": 0,
+            "response_format": "json_object",
+            "input_usd_per_million": 0.06,
+            "output_usd_per_million": 0.15,
+            "configured_extra_body": {
+              "reasoning": {
+                "effort": "low"
+              }
+            }
+          },
+          "agent": {
+            "decimal_separator": "auto",
+            "inventory": true,
+            "on_unverified": "abstain",
+            "playbooks": [],
+            "preload_documents_under": 40,
+            "preload_results": 5,
+            "skills": "examples/skills",
+            "thought_chars": 0,
+            "tools": [
+              "search",
+              "read",
+              "table",
+              "after",
+              "calculate",
+              "decode",
+              "iocs",
+              "graph"
+            ]
+          },
+          "limits": {
+            "max_calls": 12,
+            "max_context_chars": 24000,
+            "max_cost_usd": null,
+            "max_output_tokens": 3000,
+            "max_retries": 1,
+            "max_steps": 8,
+            "max_total_tokens": 60000,
+            "task_timeout_seconds": 300,
+            "timeout_seconds": 60
+          }
+        }
+      ],
+      "actions": [
+        {
+          "task": "s41-contain",
+          "precision": 0.9130434782608695,
+          "recall": 0.875
+        }
+      ],
+      "limitations": [
+        "Historical metadata did not retain separate requested_model/model_reported fields. The call model column uses a reported identifier when present, otherwise the configured identifier; the missing flag prevents distinguishing those cases.",
+        "reasoning setting is from the committed configuration, not a response-field assertion."
+      ]
+    },
+    {
+      "workflow": "pipeline-dev",
+      "source": "e0aa4ae6eb9e9ac42f30581a458e44b5fb8b2e67",
+      "models": [
+        {
+          "provider": "openai",
+          "model": "ibm-granite/granite-4.2-8b",
+          "requested_model": null,
+          "model_reported": null,
+          "input_rate": 0.06,
+          "output_rate": 0.15
+        }
+      ],
+      "stages": [
+        {
+          "stage": "analyst",
+          "attempts": 10
+        },
+        {
+          "stage": "responder",
+          "attempts": 9
+        }
+      ],
+      "configurations": [
+        {
+          "model": {
+            "provider": "openai",
+            "configured_model": "ibm-granite/granite-4.2-8b",
+            "temperature": 0,
+            "response_format": "json_object",
+            "input_usd_per_million": 0.06,
+            "output_usd_per_million": 0.15,
+            "configured_extra_body": {
+              "reasoning": {
+                "effort": "low"
+              }
+            }
+          },
+          "agent": {
+            "decimal_separator": "auto",
+            "inventory": true,
+            "on_unverified": "abstain",
+            "pipeline_rounds": 2,
+            "playbooks": [],
+            "preload_documents_under": 40,
+            "preload_results": 5,
+            "skills": "examples/skills",
+            "thought_chars": 0,
+            "tools": [
+              "search",
+              "read",
+              "table",
+              "after",
+              "calculate",
+              "decode",
+              "iocs",
+              "graph"
+            ],
+            "workflow": "pipeline"
+          },
+          "limits": {
+            "max_calls": 12,
+            "max_context_chars": 24000,
+            "max_cost_usd": null,
+            "max_output_tokens": 3000,
+            "max_retries": 1,
+            "max_steps": 8,
+            "max_total_tokens": 60000,
+            "task_timeout_seconds": 300,
+            "timeout_seconds": 60
+          }
+        }
+      ],
+      "actions": [
+        {
+          "task": "s41-contain",
+          "precision": 0.9090909090909091,
+          "recall": 0.8333333333333334
+        }
+      ],
+      "limitations": [
+        "Historical metadata did not retain separate requested_model/model_reported fields. The call model column uses a reported identifier when present, otherwise the configured identifier; the missing flag prevents distinguishing those cases.",
+        "reasoning setting is from the committed configuration, not a response-field assertion."
+      ]
+    }
+  ]
+}

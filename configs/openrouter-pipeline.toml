@@ -1,0 +1,45 @@
+# Rehearsal against a real small model through OpenRouter. IBM Granite 4.2 8B
+# is a guess at the kind of model the event provides, nothing more. Prices are
+# OpenRouter's list prices of 13 November 2026, not the event's tariff.
+# URL, model and key come from .env.
+[model]
+provider = "openai"
+response_format = "json_object"
+input_usd_per_million = 0.06
+output_usd_per_million = 0.15
+# Granite 4.2 reasons before it answers unless told otherwise; that thinking
+# is billed as output. Measured on the rehearsal incident (13 November 2026):
+# "low" needed fewer calls, cost less than half of "none" and was as accurate
+# or better. "high" was not measured.
+extra_body = { reasoning = { effort = "low" } }
+
+[jev]
+enabled = false
+
+[agent]
+workflow = "pipeline"
+preload_results = 5
+inventory = true
+preload_documents_under = 40
+skills = "hacklab.event:skills"
+tools = ["search", "read", "table", "after", "calculate", "decode", "iocs", "graph"]
+
+[guard]
+allowed_actions = ["quarantine_agent", "revoke_token", "takedown_dataset"]
+protected_targets = ["hub-scanner"]
+max_actions = 200
+
+[limits]
+max_steps = 8
+max_calls = 16
+max_retries = 1
+http_retries = 3
+timeout_seconds = 60
+task_timeout_seconds = 300
+max_context_chars = 24000
+max_output_tokens = 3000
+max_total_tokens = 120000
+
+# The temporary key is capped at 3 USD; stop well before that.
+[budget]
+max_usd = 2.0

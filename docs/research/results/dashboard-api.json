@@ -1,0 +1,82 @@
+{
+  "scope": "synthetic local API; no model requests or model-quality measurement",
+  "bun": "1.4.4",
+  "runs": 10000,
+  "calls": 100000,
+  "campaigns": 100,
+  "trials": 1000,
+  "uncertainMeasurementRecords": 1,
+  "aggregateCacheMs": 2000,
+  "warmupsPerEndpoint": 10,
+  "coldDefinition": "First request per endpoint; SQLite and OS caches are not flushed",
+  "warmDefinition": "200 sequential requests after warmups; the aggregate cache may expire",
+  "measurements": [
+    {
+      "endpoint": "/api/overview",
+      "samples": 200,
+      "coldMs": 121.719175,
+      "p50Ms": 0.06381599999997434,
+      "p95Ms": 0.09349800000001096,
+      "responseBytes": 16442
+    },
+    {
+      "endpoint": "/api/runs?limit=50&offset=5000",
+      "samples": 200,
+      "coldMs": 13.180503000000044,
+      "p50Ms": 11.793509000000086,
+      "p95Ms": 13.662442000000055,
+      "responseBytes": 21270
+    },
+    {
+      "endpoint": "/api/campaigns",
+      "samples": 200,
+      "coldMs": 1.7270549999998366,
+      "p50Ms": 0.9087949999998273,
+      "p95Ms": 1.1845659999999043,
+      "responseBytes": 22911
+    },
+    {
+      "endpoint": "/api/campaigns/synthetic-campaign-099",
+      "samples": 200,
+      "coldMs": 0.8456759999999122,
+      "p50Ms": 0.18391500000007,
+      "p95Ms": 0.24693600000000515,
+      "responseBytes": 7389
+    },
+    {
+      "endpoint": "/api/state",
+      "samples": 200,
+      "coldMs": 0.2691660000000411,
+      "p50Ms": 0.09104400000023816,
+      "p95Ms": 0.1214429999999993,
+      "responseBytes": 406
+    },
+    {
+      "endpoint": "/api/state/document?id=6c4f87d4f9f4a8493f6882e6b34ab53d",
+      "samples": 200,
+      "coldMs": 7.032901999999922,
+      "p50Ms": 4.151956000000155,
+      "p95Ms": 5.170294999999896,
+      "responseBytes": 161415
+    }
+  ],
+  "knowledge": {
+    "sourceBytes": 204748,
+    "sourceBlocks": 2925,
+    "uniqueNodes": 6,
+    "retainedOccurrences": 2925,
+    "recoveredSourceLines": 2925,
+    "truncated": false,
+    "documentResponseBytes": 161415,
+    "visualNodeCompactionRatio": 487.5,
+    "responseBodyToSourceRatio": 0.7883593490534706,
+    "interpretation": "Repeated visual nodes are grouped; decoded response-body bytes include every timestamp and position. HTTP headers, transport overhead and compression are not measured. This is not a byte-compression or model-quality result."
+  },
+  "source": "caade4935b8c0b2c64144277e850c6db8224d290",
+  "environment": {
+    "platform": "Linux x86_64",
+    "cpuQuota": "800000 / 100000 microseconds (8 CPU equivalents)",
+    "taskLimit": 1024,
+    "host": "shared development workstation; other workloads and OS caches not isolated"
+  }
+}

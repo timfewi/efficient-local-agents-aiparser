@@ -1,0 +1,17 @@
+{
+  "source": "caade4935b8c0b2c64144277e850c6db8224d290",
+  "bun": "1.4.4",
+  "scope": "Assets referenced by the production-built index, excluding stale build output. Gzip bytes are offline compression, not an HTTP or browser timing measurement.",
+  "assets": [
+    {
+      "name": "./index-ecwg9d3k.css",
+      "bytes": 30234,
+      "gzipBytes": 7344
+    },
+    {
+      "name": "./index-sqmqa16m.js",
+      "bytes": 264081,
+      "gzipBytes": 82246
+    }
+  ]
+}

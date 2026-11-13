@@ -18,6 +18,12 @@ fmt-check:
 check:
     bash scripts/check
 
+dashboard-check:
+    bash scripts/dashboard-check
+
+dashboard:
+    cd dashboard && bun run start
+
 test:
     uv run --locked python -m pytest -q
 

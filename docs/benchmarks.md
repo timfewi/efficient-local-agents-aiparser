@@ -2,6 +2,10 @@
 
 ## The loop
 
+For a bounded automatic development loop and graphical results, see the
+[feedback workspace](feedback-loop.md). It keeps hold-out observations separate
+and makes rejected or uncertain trials visible alongside improvements.
+
 ```sh
 export HACKLAB_CACHE_MODE=readwrite      # replay unchanged requests for free
 uv run hacklab benchmark --config configs/baseline.toml \

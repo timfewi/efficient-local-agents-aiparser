@@ -7,7 +7,7 @@ page is for those who want the pinned Nix environment or the ready-made VM.
 | Option | Command | Runs on | Gives you |
 | --- | --- | --- | --- |
 | Laptop setup | `bash scripts/setup` | Linux, macOS, Windows (Git Bash, WSL 2) | The harness and its checks through uv |
-| Nix shell | `nix develop` | x86_64 Linux with Nix | Python 3.15, uv, Ruff, Just and command-line tools. No container engine |
+| Nix shell | `nix develop` | x86_64 Linux with Nix | Python 3.15, uv, Ruff, Bun, Just and command-line tools. No container engine |
 | QEMU VM | `bash scripts/vm-run` | x86_64 Linux with Nix and KVM | The same tools plus rootless Podman, isolated from your machine |
 | NixOS host service | `vm start hacklab-vm` | NixOS | The VM as an on-demand service (see below) |
 

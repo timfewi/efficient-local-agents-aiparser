@@ -6,6 +6,7 @@ cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
 
 echo "python: $(python3 --version), also: $(python3.14 --version), $(python3.13 --version), $(python3.11 --version), uv: $(uv --version)"
 echo "resources: $(nproc) vCPUs, $(awk '/MemTotal/ {printf "%d MiB", $2/1024}' /proc/meminfo)"
+echo "dashboard runtime: $(bun --version)"
 if command -v bob >/dev/null; then echo "bob: $(bob --version 2>&1 | tail -n 1)"; else echo "bob: not in this variant"; fi
 
 # No remote login: neither an SSH daemon nor any listener beyond loopback.
@@ -36,6 +37,7 @@ git remote get-url origin
 test -r .bob/skills/typesafe-ai/SKILL.md || test -r .agents/skills/typesafe-ai/SKILL.md
 just ready >/dev/null
 just check
+just dashboard-check
 just benchmark >/dev/null
 just practice 7 | grep -F '"accuracy": 1.0' >/dev/null
 echo "rehearsal incident: solved by the playbooks without a model call"

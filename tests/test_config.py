@@ -54,6 +54,7 @@ def test_every_shipped_profile_is_valid_and_ships_with_cache_and_allowance_off(m
         "mock",
         "openrouter",
         "openrouter-jev",
+        "openrouter-pipeline",
         "practice",
     }
     for path in profiles:
@@ -131,3 +132,19 @@ def test_guard_and_agent_settings_are_validated():
         {"agent": {"playbooks": "team.playbooks:registry", "tools": ["read"]}}
     )
     assert config.agent.tools == ["read"] and config.guard.injection == "flag"
+
+
+def test_pipeline_profile_is_a_single_controlled_change():
+    profiles = Path(__file__).parents[1] / "configs"
+    baseline = load_config(profiles / "openrouter.toml").model_dump()
+    candidate = load_config(profiles / "openrouter-pipeline.toml").model_dump()
+    assert baseline["agent"]["workflow"] == "loop"
+    assert candidate["agent"]["workflow"] == "pipeline"
+    candidate["agent"]["workflow"] = "loop"
+    assert candidate == baseline
+
+
+@pytest.mark.parametrize("rounds", [0, 4])
+def test_pipeline_rounds_have_a_hard_bound(rounds):
+    with pytest.raises(ValidationError):
+        Config.model_validate({"agent": {"pipeline_rounds": rounds}})

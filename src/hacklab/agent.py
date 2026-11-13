@@ -137,11 +137,26 @@ class _Receipts:
 
     def __init__(self, tracker: Any):
         self._tracker = tracker
+        self.failed = False
+
+    @property
+    def receipts_complete(self) -> bool:
+        return not self.failed and getattr(self._tracker, "receipts_complete", True) is True
+
+    def mark_incomplete(self) -> None:
+        self.failed = True
+        try:
+            mark = getattr(self._tracker, "mark_incomplete", None)
+            if callable(mark):
+                mark()
+        except Exception:
+            pass  # Receipt health must not compromise the competition answer.
 
     def _write(self, name: str, *args: Any, **kwargs: Any) -> Any:
         try:
             return getattr(self._tracker, name)(*args, **kwargs)
         except Exception:
+            self.mark_incomplete()
             if not _Receipts.warned:
                 _Receipts.warned = True
                 print("hacklab: tracking failed; receipts are incomplete", file=sys.stderr)
@@ -825,7 +840,10 @@ def run_task(
                     )
                 kit = {} if model is None else {"model": model}
                 small, jev = make_providers(providers, budget, tracker, run_id, cache_salt, **kit)
-                answer = _investigate(
+                investigate = _investigate
+                if config.agent.workflow == "pipeline":
+                    from hacklab.pipeline import investigate
+                answer = investigate(
                     task, toolbox, documents, config, budget, small, jev, tracker, run_id
                 )
     except BudgetExceeded as exc:

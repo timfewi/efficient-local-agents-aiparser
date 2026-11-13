@@ -25,6 +25,7 @@ in
     python
     pythonFallback
     uv
+    bun
     ruff
     git
     gh

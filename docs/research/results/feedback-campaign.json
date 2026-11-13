@@ -1,0 +1,89 @@
+{
+  "scope": "Synthetic development campaign; aggregate receipts only. Costs are configured-price estimates. No further paid requests after the incomplete evaluation.",
+  "source": "8314d8076ed3e1d0534f17943d2b8d900146d3f9",
+  "development_seed": 41,
+  "development_digest": "74e859daabde6d0ea534b10360951a0a26e7c6625716dafc07f9da7c10418dc8",
+  "repeat": 2,
+  "limits": {
+    "max_iterations": 3,
+    "max_seconds": 600,
+    "max_usd": 0.05
+  },
+  "status": "unknown_cost",
+  "cost_usd": null,
+  "known_shared_live_spend_usd": 0.02126484,
+  "receipt_totals": {
+    "attempts": 173,
+    "unpriced_attempts": 1,
+    "known_cost_usd": 0.02126484,
+    "known_input_tokens": 286779,
+    "known_output_tokens": 27054
+  },
+  "statuses": [
+    {
+      "status": "invalid_response",
+      "attempts": 2
+    },
+    {
+      "status": "ok",
+      "attempts": 170
+    },
+    {
+      "status": "transport_error",
+      "attempts": 1
+    }
+  ],
+  "models": [
+    {
+      "model": "ibm-granite/granite-4.2-8b",
+      "requested_model": null,
+      "model_reported": null
+    }
+  ],
+  "stages": [
+    {
+      "stage": "optimizer_analyst",
+      "attempts": 2
+    },
+    {
+      "stage": "ordinary_loop",
+      "attempts": 171
+    }
+  ],
+  "launcher": {
+    "elapsed_ms": 489781,
+    "exit_code": 143,
+    "signal_source": "unknown"
+  },
+  "incomplete_candidate": {
+    "agent": {
+      "workflow": "loop",
+      "preload_results": 0,
+      "inventory": true,
+      "preload_documents_under": 20,
+      "list_preview": 12
+    },
+    "limits": {
+      "max_observation_chars": 4000
+    },
+    "fixed_config_sha256": "bb5831f8a2fb5fcbddd8091d541f5fbd03a3ccf57cb7a50682fba4d6e6d0b9b7",
+    "candidate_sha256": "dc3b729b9457a3f8fd1d11287dcfb98004011884a5730be690906c889f20c869",
+    "config_sha256": "717157445d040ae2478c956a1f5a14c97649a0deda95f963e5e94bf2c1537309"
+  },
+  "uncertain_measurement_records": 1,
+  "manual_reconciliation": {
+    "original_records_preserved_privately": true,
+    "new_provider_receipts": 0,
+    "reason": "Interrupted process left nonterminal state; incomplete trial explicitly marked unknown cost."
+  },
+  "holdout": {
+    "seed": 104729,
+    "generated": false,
+    "evaluated": false
+  },
+  "limitations": [
+    "Recorded shared-database spending is not an invoice guarantee.",
+    "The accepted development threshold edit does not change preload selection for this seed; no causal quality improvement established.",
+    "Signal/recovery repairs were validated offline after these measurements; no paid retest."
+  ]
+}
